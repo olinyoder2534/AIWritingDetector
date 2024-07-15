@@ -25,18 +25,25 @@ The result is this dataset, it's split in train and test because I wanted to pre
 To save on computation time down the road, I downsampled my data. While I would normally be against removing good training data, I have overestimated the capability of my machine and my patience before and do not want to make those mistakes again. The data will be restrucuted to 40,000 training samples (20k AI, 20k not AI) and 10,000 testing samples.
 
 #### Cleaning Text Data
-First, I wanted to remove any PII from the text. In the past, I haven't had much luck with the Scrub or Sanityze libraries so I resorted to building my own function to cover the basic PII. I used regex functions to remove emails, phone numbers, and social security numbers. Using Spacy's NER, I also removed any instances of names. Note: if you elect to use Spacy's small libary, I would use POS == "PROPN" rather than NER because it often does not identify names accurately. Within the function, I also performed some classic NLP cleaning: converting to lowercase, remove newline characters and punctuation, and lemmatization.
+First, I wanted to remove any PII from the text. In the past, I haven't had much luck with the Scrub or Sanityze libraries so I resorted to building my own function to cover the basic PII. I used regex functions to remove emails, phone numbers, and social security numbers. Using Spacy's NER, I also removed any instances of names. Note: if you elect to use Spacy's small libary, I would use POS == "PROPN" rather than NER because it often does not identify names accurately. Within the function, I also performed some classic NLP tasks such as converting to lowercase, remove newline characters and punctuation, and lemmatization.
 
-## Scope
+## Modeling
+With the data cleaned and preprocessed, I began modeling. I elected to train both the Spacy and Bert embeddings using the same machine learning techniques without hyperparameter tuning: naive bayes, logistic regression, KNN, random forest, XGBoost, SVM, and a simple RNN.
+
+#### Spacy
+All models tended to follow the following trends: performing very well in identifying AI instances (high recall for class 1) but have moderate precision, meaning there are some false positives for AI instances. For non AI instances (class 0), the model has great precision, meaning it has very few false positives for non AI instances, but the recall is lower, indicating it misses quite a few actual non AI instances.
+
+#### TF TextVectorization
+Using generic TensorFlow text classification code, I was able to train the model with the highest accuracy.
+
+#### Bert
+Generally, not as great as Spacy.
 
 #### FastText
-The go-to for creating custom embeddings. Tested CBOW vs SkipGram and edit some of the hyperparameters. 
-* preprocess
-  * word embeddings
-    * TF-IDF, word2vec, glove, fastText, etc.
-    * use pre-built embeddings
-* rebalance train data (test various methods)
-* modeling
-  * logistic reg, RF, boosted, KNN, RNN, etc.
-  * can AI detect AI? (using Dolly 3B LLM)
-    
+
+## Error & Future Questions
+
+* Use more data
+* Adjust model hyperparameters/neural network architecture
+* Test different embedding techniques
+* Use an LLM to classify text
